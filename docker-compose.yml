@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres-offer
+    ports:
+      - "5052:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: employee_portals
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  backend:
+    build: ./Backend
+    container_name: backend-offer
+    ports:
+      - "3085:3085"
+    depends_on:
+      - postgres
+
+  employee:
+    build: ./employee
+    container_name: employee-offer
+    ports:
+      - "9039:80"
+    depends_on:
+      - backend
+
+  hr:
+    build: ./HR
+    container_name: HR-offer
+    ports:
+      - "9040:80"
+    depends_on:
+      - backend
+
+  congratulations:
+    build: ./Congratulations
+    container_name: congratulations
+    ports:
+      - "9041:80"
+    depends_on:
+      - backend
+
+volumes:
+  db_data:
+
